@@ -1,0 +1,51 @@
+.cache_stats_button.cache-stats-hit {
+    color: #7fd99a;
+}
+
+.cache_stats_button.cache-stats-write {
+    color: #e6c07b;
+}
+
+.cache_stats_button.cache-stats-miss {
+    color: #c9c9c9;
+}
+
+.cache-stats-panel {
+    text-align: left;
+    min-width: 280px;
+    font-size: 0.95em;
+    line-height: 1.45;
+}
+
+.cache-stats-panel h3 {
+    margin: 0 0 12px;
+    font-size: 1.05em;
+}
+
+.cache-stats-panel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cache-stats-panel th,
+.cache-stats-panel td {
+    padding: 4px 0;
+    text-align: left;
+}
+
+.cache-stats-panel td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.cache-stats-panel .cache-stats-hitpct {
+    font-size: 1.35em;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+
+.cache-stats-panel .cache-stats-note {
+    opacity: 0.75;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
