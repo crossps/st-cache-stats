@@ -1,37 +1,37 @@
 # Cache Stats
 
 SillyTavern does not persist Anthropic (or OpenAI-style) prompt-cache usage on
-chat messages. This extension tees the generate stream, reads cache hit / write
-from the reply, stores it on that message, and puts a database icon on the
-message-actions row.
+chat messages. Cache Stats captures that usage during generation, stores it on
+the assistant message, and adds a database icon to the message-actions row.
 
-Tap the icon to see hit rate, cache read, cache write, uncached input, and
-output for **that** reply.
+Tap the icon to see cache hit rate, cache reads, cache writes, uncached input,
+and output for that reply.
 
-Older messages stay blank until you generate or swipe again — there is nothing
-to recover after the fact.
+Older messages stay blank until you generate or swipe again because their usage
+data is no longer available.
 
 ## Install
 
-In SillyTavern: **Extensions → Install extension**, paste:
+In SillyTavern, open **Extensions → Install extension** and paste:
 
 ```
 https://github.com/crossps/st-cache-stats
 ```
 
-Enable **Cache Stats**, then refresh. The next generate or swipe records stats.
+Enable **Cache Stats**, then reload SillyTavern. Your next generation or swipe
+will record statistics. The extension works on desktop and Android installs.
 
-Works on PC and phone installs the same way. In **Extensions → Cache Stats**, choose the prompt-cache policy used by the Claude Creative Writing Proxy's normal SillyTavern route:
-
-- **Off** — avoids cache-write charges for highly dynamic cards and lorebooks
-- **5 minutes** — cheaper writes for active sessions
-- **1 hour** — best for stable prompts reused after longer pauses
-
-The extension normally detects the active custom proxy URL from the next generation. You can also enter the proxy URL manually. It synchronizes the selected policy before each generation; the separate JanitorAI cache choice is not changed.
+Cache Stats only observes and records usage. It does not change cache duration,
+provider settings, endpoints, or request behavior.
 
 ## What it captures
 
-- Anthropic SSE `message_start` / `message_delta` usage (`cache_read_input_tokens`, `cache_creation_input_tokens`, 5m / 1h writes)
-- OpenAI-style `prompt_tokens_details.cached_tokens` when that is what the backend returns
+- Anthropic SSE `message_start` and `message_delta` usage, including
+  `cache_read_input_tokens`, `cache_creation_input_tokens`, and separate 5-minute
+  and 1-hour writes when reported
+- OpenAI-style `prompt_tokens_details.cached_tokens` when supplied by the backend
+- Non-streaming usage objects returned as JSON
 
-Quiet / impersonate generations are skipped. Stats live on `message.extra.cache_usage` (and the matching swipe extra), so they travel with the chat file.
+Quiet and impersonate generations are skipped. Statistics are stored in
+`message.extra.cache_usage` and the corresponding swipe extra, so they travel
+with the chat file.

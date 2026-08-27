@@ -1,5 +1,3 @@
-import { extension_settings } from '../../../extensions.js';
-
 /**
  * Cache Stats — per-message prompt-cache read/write for Claude (and OpenAI-style) replies.
  *
@@ -11,70 +9,12 @@ import { extension_settings } from '../../../extensions.js';
 const BTN = 'cache_stats_button';
 const EXTRA_KEY = 'cache_usage';
 const GENERATE_PATH = '/api/backends/chat-completions/generate';
-const NAME = 'cache-stats';
-const DEFAULTS = { cacheTtl: '1h', proxy: '' };
-
 let pendingUsage = null;
 let captureThisGeneration = true;
 let fetchHooked = false;
 
 function ctx() {
     return SillyTavern.getContext();
-}
-
-function settings() {
-    if (!extension_settings[NAME]) extension_settings[NAME] = { ...DEFAULTS };
-    for (const [key, value] of Object.entries(DEFAULTS)) {
-        if (extension_settings[NAME][key] === undefined) extension_settings[NAME][key] = value;
-    }
-    if (!['off', '5m', '1h'].includes(extension_settings[NAME].cacheTtl)) {
-        extension_settings[NAME].cacheTtl = DEFAULTS.cacheTtl;
-    }
-    return extension_settings[NAME];
-}
-
-function proxyBase(value) {
-    return String(value || '').trim()
-        .replace(/\/+$/, '')
-        .replace(/\/v1\/chat\/completions$/i, '')
-        .replace(/\/v1$/i, '');
-}
-
-function setSyncStatus(text, state = '') {
-    const $status = $('#cache_stats_sync_status');
-    if (!$status.length) return;
-    $status.text(text).attr('data-state', state);
-}
-
-function proxyFromGenerateRequest(init) {
-    try {
-        const body = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body;
-        if (!body || typeof body !== 'object') return '';
-        return proxyBase(body.reverse_proxy || body.custom_url || body.proxy_url || body.api_url || '');
-    } catch {
-        return '';
-    }
-}
-
-async function syncCachePolicy(base, quiet = false) {
-    const proxy = proxyBase(base || settings().proxy);
-    if (!proxy) {
-        setSyncStatus('Waiting for a proxy URL', 'warning');
-        if (!quiet) toastr.warning('Set the Claude proxy URL first.', 'Cache Stats');
-        return false;
-    }
-    setSyncStatus('Synchronizing…', 'pending');
-    const response = await fetch(`${proxy}/admin/sillytavern-cache`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cacheTtl: settings().cacheTtl }),
-        cache: 'no-store',
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || `Proxy returned HTTP ${response.status}`);
-    setSyncStatus(`Applied: ${settings().cacheTtl === 'off' ? 'Off' : settings().cacheTtl}`, 'success');
-    if (!quiet) toastr.success(`Prompt cache: ${settings().cacheTtl === 'off' ? 'off' : settings().cacheTtl}`, 'Cache Stats');
-    return true;
 }
 
 function fmt(n) {
@@ -210,20 +150,6 @@ function hookFetch() {
     window.fetch = async function patchedFetch(input, init) {
         const url = typeof input === 'string' ? input : input?.url;
         const isGeneration = !!url && String(url).includes(GENERATE_PATH);
-        if (isGeneration) {
-            const detected = proxyFromGenerateRequest(init);
-            if (detected) {
-                settings().proxy = detected;
-                ctx().saveSettingsDebounced();
-                $('#cache_stats_proxy').val(detected);
-            }
-            try {
-                await syncCachePolicy(detected || settings().proxy, true);
-            } catch (err) {
-                setSyncStatus('Not applied — check proxy URL', 'error');
-                console.warn('[cache-stats] cache policy sync failed:', err);
-            }
-        }
         const response = await original(input, init);
         if (!isGeneration || !response.ok) {
             return response;
@@ -376,57 +302,7 @@ function onMessageRendered(mesId) {
     }
 }
 
-function mountSettings() {
-    const $host = $('#extensions_settings2').length ? $('#extensions_settings2') : $('#extensions_settings');
-    if (!$host.length || $('#cache_stats_settings').length) return;
-    const s = settings();
-    $host.append(`
-      <div id="cache_stats_settings" class="cache-stats-settings">
-        <div class="inline-drawer">
-          <div class="inline-drawer-toggle inline-drawer-header">
-            <b>Cache Stats</b>
-            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
-          </div>
-          <div class="inline-drawer-content">
-            <small>Choose the prompt-cache policy for this proxy's normal SillyTavern <code>/v1</code> route. The setting is synchronized before each generation.</small>
-            <label for="cache_stats_ttl">Prompt cache</label>
-            <select id="cache_stats_ttl" class="text_pole">
-              <option value="off">Off</option>
-              <option value="5m">5 minutes</option>
-              <option value="1h">1 hour</option>
-            </select>
-            <small><b>Off</b> suits highly dynamic lorebooks. <b>5 minutes</b> is cheaper to write. <b>1 hour</b> suits stable prompts reused after pauses.</small>
-            <label for="cache_stats_proxy">Claude proxy URL</label>
-            <input id="cache_stats_proxy" class="text_pole" type="text" placeholder="https://your-proxy.example">
-            <small>Usually detected from the active custom endpoint on your next generation.</small>
-            <div id="cache_stats_sync_status" class="cache-stats-sync-status" data-state="idle">Not synchronized yet</div>
-          </div>
-        </div>
-      </div>`);
-    $('#cache_stats_ttl').val(s.cacheTtl);
-    $('#cache_stats_proxy').val(s.proxy);
-    $('#cache_stats_ttl').on('change', async function () {
-        settings().cacheTtl = String($(this).val() || '1h');
-        ctx().saveSettingsDebounced();
-        try { await syncCachePolicy(); } catch (err) {
-            setSyncStatus('Not applied — check proxy URL', 'error');
-            toastr.error(err.message, 'Cache Stats');
-        }
-    });
-    $('#cache_stats_proxy').on('change', async function () {
-        settings().proxy = proxyBase($(this).val());
-        $(this).val(settings().proxy);
-        ctx().saveSettingsDebounced();
-        try { await syncCachePolicy(); } catch (err) {
-            setSyncStatus('Not applied — check proxy URL', 'error');
-            toastr.error(err.message, 'Cache Stats');
-        }
-    });
-}
-
-settings();
 jQuery(async () => {
-    mountSettings();
     hookFetch();
     const { eventSource, eventTypes, event_types } = ctx();
     const types = eventTypes || event_types;
