@@ -21,7 +21,13 @@ https://github.com/crossps/st-cache-stats
 
 Enable **Cache Stats**, then refresh. The next generate or swipe records stats.
 
-Works on PC and phone installs the same way. No settings, no extra server.
+Works on PC and phone installs the same way. In **Extensions → Cache Stats**, choose the prompt-cache policy used by the Claude Creative Writing Proxy's normal SillyTavern route:
+
+- **Off** — avoids cache-write charges for highly dynamic cards and lorebooks
+- **5 minutes** — cheaper writes for active sessions
+- **1 hour** — best for stable prompts reused after longer pauses
+
+The extension normally detects the active custom proxy URL from the next generation. You can also enter the proxy URL manually. It synchronizes the selected policy before each generation; the separate JanitorAI cache choice is not changed.
 
 ## What it captures
 

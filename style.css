@@ -1,3 +1,30 @@
+.cache-stats-settings .inline-drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cache-stats-settings label {
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.cache-stats-settings small {
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+.cache-stats-sync-status {
+    margin-top: 4px;
+    font-size: 0.85em;
+    opacity: 0.78;
+}
+
+.cache-stats-sync-status[data-state="success"] { color: #7fd99a; }
+.cache-stats-sync-status[data-state="warning"],
+.cache-stats-sync-status[data-state="pending"] { color: #e6c07b; }
+.cache-stats-sync-status[data-state="error"] { color: #ef8f8f; }
+
 .cache_stats_button.cache-stats-hit {
     color: #7fd99a;
 }
