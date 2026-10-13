@@ -10,6 +10,10 @@
     color: #c9c9c9;
 }
 
+.cache_stats_button.cache-stats-unknown {
+    opacity: 0.45;
+}
+
 .cache-stats-panel {
     text-align: left;
     min-width: 280px;
