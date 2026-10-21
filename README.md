@@ -4,9 +4,10 @@ SillyTavern does not persist Anthropic, OpenAI-style, or Gemini prompt-cache usa
 chat messages. Cache Stats captures that usage during generation, stores it on
 the assistant message, and adds a database icon to the message-actions row.
 
-The icon's colour shows the result at a glance: **yellow** when the reply read
-from the cache, **green** when it wrote to it, grey for a reported miss, and dim
-when there's no data. Tap the icon to see cache hit rate, cache reads, cache
+The icon's colour shows the result at a glance: **green** (glowing) when the
+reply wrote to the cache, which is the usual Claude case of reading the cached
+prefix and writing the new turn; **yellow** (glowing) when it only read; plain
+for a reported miss; dim when there's no data. Tap the icon to see cache hit rate, cache reads, cache
 writes, uncached input, and output for that reply.
 
 Older messages stay blank until you generate or swipe again because their usage

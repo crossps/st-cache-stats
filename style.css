@@ -1,5 +1,7 @@
-/* State colours: yellow = cache read (hit), green = cache write, grey = reported
-   miss, dim = no data. Themes style every message button (ST dims them to 30%
+/* State colours: green = the reply wrote to the cache (usually alongside a read),
+   yellow = it only read, plain = a reported miss, dim = no data. The two cache
+   states glow in their colour. #chat#chat doubles the ID weight: the phone layout
+   (st-mobile) clears every message button's filter with an ID-level rule. Themes style every message button (ST dims them to 30%
    opacity, Not-A-Discord and st-mobile set their colour), so these need the
    #chat selector and !important to show at all (user, 2026-10-21). */
 :root {
@@ -7,31 +9,34 @@
     --cache-stats-write: #4fd18b;
 }
 
-#chat .mes .cache_stats_button.cache-stats-hit,
-#chat .mes .cache_stats_button.cache-stats-write {
+#chat#chat .mes .cache_stats_button.cache-stats-hit,
+#chat#chat .mes .cache_stats_button.cache-stats-write {
     opacity: 1 !important;
+}
+
+#chat#chat .mes .cache_stats_button.cache-stats-hit {
+    color: var(--cache-stats-read) !important;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--cache-stats-read) 85%, transparent)) drop-shadow(0 0 8px color-mix(in srgb, var(--cache-stats-read) 50%, transparent)) !important;
+}
+
+#chat#chat .mes .cache_stats_button.cache-stats-write {
+    color: var(--cache-stats-write) !important;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--cache-stats-write) 85%, transparent)) drop-shadow(0 0 8px color-mix(in srgb, var(--cache-stats-write) 50%, transparent)) !important;
+}
+
+#chat#chat .mes .cache_stats_button.cache-stats-miss {
+    color: #c9c9c9 !important;
     filter: none !important;
 }
 
-#chat .mes .cache_stats_button.cache-stats-hit {
-    color: var(--cache-stats-read) !important;
-}
-
-#chat .mes .cache_stats_button.cache-stats-write {
-    color: var(--cache-stats-write) !important;
-}
-
-#chat .mes .cache_stats_button.cache-stats-miss {
-    color: #c9c9c9 !important;
-}
-
-#chat .mes .cache_stats_button.cache-stats-unknown,
-#chat .mes .cache_stats_button.cache-stats-none {
+#chat#chat .mes .cache_stats_button.cache-stats-unknown,
+#chat#chat .mes .cache_stats_button.cache-stats-none {
     color: #8a8a8a !important;
     opacity: 0.45 !important;
+    filter: none !important;
 }
 
-#chat .mes .cache_stats_button:hover {
+#chat#chat .mes .cache_stats_button:hover {
     opacity: 1 !important;
 }
 

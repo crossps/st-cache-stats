@@ -322,8 +322,10 @@ function onGenerationEnded() {
 
 function buttonClass(usage) {
     if (!usage) return 'cache-stats-none';
-    if (usage.cache_read > 0) return 'cache-stats-hit';
+    // Any write wins: most Claude replies read the cached prefix *and* write the
+    // new turn, and the user wants those green; yellow is a pure read (2026-10-21).
     if (usage.cache_write > 0) return 'cache-stats-write';
+    if (usage.cache_read > 0) return 'cache-stats-hit';
     if (usage.cache_reported === false) return 'cache-stats-unknown';
     return 'cache-stats-miss';
 }
