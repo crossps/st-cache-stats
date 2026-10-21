@@ -321,7 +321,7 @@ function onGenerationEnded() {
 }
 
 function buttonClass(usage) {
-    if (!usage) return '';
+    if (!usage) return 'cache-stats-none';
     if (usage.cache_read > 0) return 'cache-stats-hit';
     if (usage.cache_write > 0) return 'cache-stats-write';
     if (usage.cache_reported === false) return 'cache-stats-unknown';
@@ -351,7 +351,7 @@ function paintButton(mesId) {
 
     const usage = getUsageForMessage(mesId);
     $btn.attr('title', buttonTitle(usage));
-    $btn.removeClass('cache-stats-hit cache-stats-write cache-stats-miss cache-stats-unknown');
+    $btn.removeClass('cache-stats-hit cache-stats-write cache-stats-miss cache-stats-unknown cache-stats-none');
     const klass = buttonClass(usage);
     if (klass) $btn.addClass(klass);
 }
@@ -392,8 +392,8 @@ function showPopup(mesId) {
                 <h3>Prompt cache</h3>
                 <div class="cache-stats-hitpct">${unreported ? 'Not reported' : `${usage.hit_rate.toFixed(1)}% hit`}</div>
                 <table>
-                    <tr><th>Cache read</th><td>${fmt(usage.cache_read)}</td></tr>
-                    ${provider === 'gemini' ? '' : `<tr><th>Cache write</th><td>${fmt(usage.cache_write)}</td></tr>`}
+                    <tr class="cache-stats-read"><th>Cache read</th><td>${fmt(usage.cache_read)}</td></tr>
+                    ${provider === 'gemini' ? '' : `<tr class="cache-stats-write"><th>Cache write</th><td>${fmt(usage.cache_write)}</td></tr>`}
                     <tr><th>Uncached input</th><td>${fmt(usage.input_tokens)}</td></tr>
                     <tr><th>Total input</th><td>${fmt(usage.total_input)}</td></tr>
                     <tr><th>Output${provider === 'gemini' ? ' (incl. thinking)' : ''}</th><td>${fmt(usage.output_tokens)}</td></tr>
