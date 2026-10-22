@@ -322,9 +322,8 @@ function onGenerationEnded() {
 
 function buttonClass(usage) {
     if (!usage) return 'cache-stats-none';
-    // Any write wins: most Claude replies read the cached prefix *and* write the
-    // new turn, and the user wants those green; yellow is a pure read (2026-10-21).
-    if (usage.cache_write > 0) return 'cache-stats-write';
+    // Green when anything was read from the cache, yellow when nothing was
+    // (a miss, or a reply that only wrote). Writes don't count (user, 2026-10-22).
     if (usage.cache_read > 0) return 'cache-stats-hit';
     if (usage.cache_reported === false) return 'cache-stats-unknown';
     return 'cache-stats-miss';

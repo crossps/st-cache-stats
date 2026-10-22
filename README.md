@@ -5,9 +5,9 @@ chat messages. Cache Stats captures that usage during generation, stores it on
 the assistant message, and adds a database icon to the message-actions row.
 
 The icon's colour shows the result at a glance: **green** when the
-reply wrote to the cache, which is the usual Claude case of reading the cached
-prefix and writing the new turn; **yellow** when it only read; the normal icon
-colour for a miss or when there's no data. Tap the icon to see cache hit rate, cache reads, cache
+reply read from the cache; **yellow** when it read nothing (a miss, including a
+reply that only wrote the cache); the normal icon colour when there's no data.
+In the popup, cache reads are green and cache writes yellow. Tap the icon to see cache hit rate, cache reads, cache
 writes, uncached input, and output for that reply.
 
 Older messages stay blank until you generate or swipe again because their usage

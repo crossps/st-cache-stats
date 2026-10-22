@@ -1,15 +1,15 @@
-/* State colours: green = the reply wrote to the cache (usually alongside a read),
-   yellow = it only read, anything else = the normal icon. Colour only, no glow
-   (user, 2026-10-21). Themes style every message button (ST dims them to 30%
+/* State colours: green = the reply read from the cache, yellow = it read nothing
+   (a miss or a write-only reply), no data = the normal icon. In the popup, read is
+   green and write yellow (user, 2026-10-22). Colour only, no glow (2026-10-21). Themes style every message button (ST dims them to 30%
    opacity, Not-A-Discord and st-mobile set their colour), so these need the
    #chat#chat selector and !important to show at all. */
 :root {
-    --cache-stats-read: #f2c94c;
-    --cache-stats-write: #4fd18b;
+    --cache-stats-read: #4fd18b;
+    --cache-stats-write: #f2c94c;
 }
 
 #chat#chat .mes .cache_stats_button.cache-stats-hit,
-#chat#chat .mes .cache_stats_button.cache-stats-write {
+#chat#chat .mes .cache_stats_button.cache-stats-miss {
     opacity: 1 !important;
 }
 
@@ -17,7 +17,7 @@
     color: var(--cache-stats-read) !important;
 }
 
-#chat#chat .mes .cache_stats_button.cache-stats-write {
+#chat#chat .mes .cache_stats_button.cache-stats-miss {
     color: var(--cache-stats-write) !important;
 }
 
